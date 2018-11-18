@@ -4,7 +4,8 @@
 To find the shortest path from one node to another.
 
 ### Method
-Pick a node as a starting point. Visit every neighbor of that node, see how far
+Pick a node as a starting point. Mark it with a distance of zero and mark all
+others with a distance of Infinity. Visit every neighbor of that node, see how far
 away it is, and save that distance. Then, pick the lowest distance, non-visited
 node, and repeat the process, adding the distance between the neighbor node to
 the current node's distance from the initial node, and so on.
@@ -26,7 +27,7 @@ the current node's distance from the initial node, and so on.
 
 ### Pseudocode
 ```
-function Dijkstra(graph):
+function dijkstra(graph):
   for each in graph:
     each.distance = Infinity
   graph[0].distance = 0
