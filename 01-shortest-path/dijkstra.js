@@ -1,18 +1,20 @@
 const _ = require('lodash')
 const GraphNode = require('../utils/GraphNode')
 
-const length = (node, neighbor) => {
-
+const getLength = (u, v) => {
+  const i = _.findIndex(u.adj, { n: v.n })
+  const w = u.adj[i] || {}
+  return w.w
 }
 
 // 1. Mark all nodes unvisited.
 // Create a set of all the unvisited nodes called the unvisited set.
 const adjWithDistances = [
-  [ {n:1,w:3}, {n:2,w:2}, {n:4,w:4} ],
-  [ {n:0,w:3}, {n:2,w:8} ],
-  [ {n:0,w:2}, {n:1,w:8}, {n:3,w:1} ],
-  [ {n:2,w:1}, {n:4,w:3} ],
-  [ {n:0,w:4}, {n:3,w:3} ],
+  [ {n:1,w:7}, {n:2,w:3} ],
+  [ {n:0,w:7}, {n:2,w:1}, {n:3,w:2}, {n:4,w:6} ],
+  [ {n:0,w:3}, {n:1,w:1}, {n:3,w:2} ],
+  [ {n:2,w:2}, {n:1,w:2}, {n:4,w:4} ],
+  [ {n:3,w:4}, {n:1,w:6} ],
 ]
 const unvisited = []
 for (let i=0, l=4; i <= 4; i++) {
@@ -23,12 +25,11 @@ for (let i=0, l=4; i <= 4; i++) {
 
 // 2. Set the initial node as current.
 // Assign to every node a tentative distance value: set it to zero for
-// our initial node and to infinity for all other unvisited.
+// our initial node and to infinity for all other nodes.
 Object.values(unvisited).forEach(each => {
   each.distance = Number.POSITIVE_INFINITY
 })
-const initialNode = unvisited[0]
-initialNode.distance = 0
+unvisited[0].distance = 0
 
 
 
@@ -45,17 +46,18 @@ const visited = []
 while (!!unvisited.length) {
   const minDist = Math.min(...unvisited.map(e => e.distance))
   const minDistIndex = _.findIndex(unvisited, { distance: minDist })
-  const n = unvisited[minDistIndex]
-  unvisited.splice(minDistIndex, 1)
+  const n = unvisited.splice(minDistIndex, 1)[0]
   visited.push(n)
   n.adj.forEach(neighbor => {
-    const alt = n.distance + neighbor.w
-    const neighborNode = unvisited[neighbor.n]
-    console.log(neighborNode)
-    if (neighborNode && alt < neighborNode.distance) {
-      neighborNode.distance = alt
+    const neighborNode = _.find(unvisited, { n: neighbor.n })
+    if (neighborNode) {
+      const length = getLength(n, neighborNode)
+      const alt = n.distance + length
+      if (alt < neighborNode.distance) {
+        neighborNode.distance = alt
+      }
     }
   })
 }
 
-console.log(visited)
+visited.forEach(each => console.log(each.distance))
